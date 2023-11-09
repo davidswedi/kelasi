@@ -1,4 +1,5 @@
-import { inject, Injectable, signal } from '@angular/core';
+// import { inject, Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import {
   getDownloadURL,
   ref,
@@ -6,9 +7,6 @@ import {
   uploadBytes,
 } from '@angular/fire/storage';
 
-@Injectable({
-  providedIn: 'root',
-})
 export class StorageService {
   imageUrls = signal<any>([]);
   private storage = inject(Storage);

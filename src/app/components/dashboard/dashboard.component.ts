@@ -1,4 +1,3 @@
-import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -14,6 +13,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { LetDirective } from '@ngrx/component';
 import { MediaQueryObserverService } from 'src/app/core/services/utilities/media-query-observer.service';
 import { SwitchthemeService } from 'src/app/core/services/utilities/switchtheme.service';
+import { Component, inject } from '@angular/core';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -35,18 +35,16 @@ import { SwitchthemeService } from 'src/app/core/services/utilities/switchtheme.
     <div class="dashboard-container">
       <mat-toolbar>
         <div class="left-container ">
+          @if ( (viewPoint$ | async) === 'XSmall' || (viewPoint$ | async) ===
+          'Small' || (viewPoint$ | async) === 'Medium' ) {
           <button
             (click)="drawer.toggle()"
             mat-icon-button
             matTooltip="Elargir le menu"
-            *ngIf="
-              (viewPoint$ | async) === 'XSmall' ||
-              (viewPoint$ | async) === 'Small' ||
-              (viewPoint$ | async) === 'Medium'
-            "
           >
             <mat-icon>menu</mat-icon>
           </button>
+          }
           <a mat-button routeLink="/gestion-eleve">{{ appName }}</a>
         </div>
         <img

@@ -2,6 +2,12 @@ import { Routes } from '@angular/router';
 const appName = 'Kelasi';
 export const routes: Routes = [
   {
+    path: '',
+    title: `Acceuil - ${appName}`,
+    loadComponent: () =>
+      import('./components/landingpage/landingpage.component'),
+  },
+  {
     path: 'login',
     title: `Login - ${appName}`,
     loadComponent: () => import('./components/auth/login/login.component'),
@@ -12,7 +18,7 @@ export const routes: Routes = [
     loadComponent: () => import('./components/auth/signup/signup.component'),
   },
   {
-    path: '',
+    path: 'dashboard',
     title: `Dashboard - ${appName}`,
     loadComponent: () => import('./components/dashboard/dashboard.component'),
     children: [

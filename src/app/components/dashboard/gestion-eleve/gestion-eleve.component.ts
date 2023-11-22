@@ -60,6 +60,7 @@ const NAMES: string[] = [
     <app-header-table-action
       btnLabel="Nouvel élève"
       searchPlaceholder="Rechercher par nom, post nom"
+      data="Formulaire Eleve"
     />
 
     <div class="mat-elevation-z8">

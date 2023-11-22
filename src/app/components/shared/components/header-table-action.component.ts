@@ -133,6 +133,7 @@ import { UtilityService } from 'src/app/core/services/utilities/utility.service'
 export class HeaderTableActionComponent {
   @Input({ required: true }) btnLabel!: string;
   @Input({ required: true }) searchPlaceholder!: string;
+  @Input() data!: string;
   @Input() collectionName!: string;
   @Input() dialogComponent!: ComponentType<unknown>;
   @Input() tableDataSource!: MatTableDataSource<
@@ -149,6 +150,9 @@ export class HeaderTableActionComponent {
       hasBackdrop: true,
       disableClose: true,
       autoFocus: false,
+      data: {
+        form: 'Form',
+      },
     });
   }
 

@@ -1,17 +1,16 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HeaderTableActionComponent } from '../../shared/components/header-table-action.component';
-
 @Component({
-  selector: 'app-gestion-prof',
+  selector: 'app-teacher',
   standalone: true,
+  imports: [CommonModule, HeaderTableActionComponent],
   template: `
     <app-header-table-action
-      btnLabel="Nouvel enseignant"
-      searchPlaceholder="Rechercher par nom, post nom"
+      btnLabel="Nouvel Enseignant"
+      searchPlaceholder="Cherchez par Nom"
     />
   `,
-  styles: [],
-  imports: [CommonModule, HeaderTableActionComponent],
+  styles: ``,
 })
-export default class GestionProfComponent {}
+export default class TeacherComponent {}

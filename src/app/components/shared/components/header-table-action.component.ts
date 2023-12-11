@@ -12,7 +12,7 @@ import {
   MatTableDataSource,
   MatTableDataSourcePaginator,
 } from '@angular/material/table';
-import { DatesFilterComponent } from './dates-filter.component';
+
 import { RouterLink } from '@angular/router';
 import { UtilityService } from 'src/app/core/services/utilities/utility.service';
 
@@ -44,16 +44,11 @@ import { UtilityService } from 'src/app/core/services/utilities/utility.service'
         <button mat-stroked-button color="primary" [matMenuTriggerFor]="menu">
           Filtrer
         </button>
-        <mat-menu #menu="matMenu">
-          <button mat-menu-item (click)="openDateRangeFilterDialog()">
-            Intervale de dates
-          </button>
-          <a mat-menu-item (click)="clearFilter()"> Annuler le filtre </a>
-        </mat-menu>
+        <mat-menu #menu="matMenu"> </mat-menu>
         <button
           mat-flat-button
           color="primary"
-          (click)="openAddItemDialog()"
+          (click)="openAddStudentDialog()"
           *ngIf="
             (viewPoint$ | async) === 'XLarge' ||
             (viewPoint$ | async) === 'Large' ||
@@ -65,7 +60,7 @@ import { UtilityService } from 'src/app/core/services/utilities/utility.service'
         <button
           mat-mini-fab
           color="primary"
-          (click)="openAddItemDialog()"
+          (click)="openAddStudentDialog()"
           *ngIf="
             (viewPoint$ | async) === 'XSmall' ||
             (viewPoint$ | async) === 'Small'
@@ -145,27 +140,24 @@ export class HeaderTableActionComponent {
   private dialog = inject(MatDialog);
   private us = inject(UtilityService);
 
-  openAddItemDialog() {
+  openAddStudentDialog() {
     this.dialog.open(this.dialogComponent, {
       hasBackdrop: true,
       disableClose: true,
       autoFocus: false,
-      data: {
-        form: 'Form',
-      },
     });
   }
 
-  openDateRangeFilterDialog() {
-    this.dialog.open(DatesFilterComponent, {
-      hasBackdrop: true,
-      disableClose: true,
-      data: {
-        tableDataSource: this.tableDataSource,
-        collectionName: this.collectionName,
-      },
-    });
-  }
+  // openDateRangeFilterDialog() {
+  //   this.dialog.open(DatesFilterComponent, {
+  //     hasBackdrop: true,
+  //     disableClose: true,
+  //     data: {
+  //       tableDataSource: this.tableDataSource,
+  //       collectionName: this.collectionName,
+  //     },
+  //   });
+  // }
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
@@ -176,5 +168,5 @@ export class HeaderTableActionComponent {
     }
   }
 
-  clearFilter = () => this.us.navigateOnTheSameUrl('/ge-stock/stock');
+  // clearFilter = () => this.us.navigateOnTheSameUrl('/ge-stock/stock');
 }

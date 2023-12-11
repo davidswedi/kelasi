@@ -2,10 +2,10 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-gestion-minerval',
+  selector: 'app-manage-marks',
   standalone: true,
   imports: [CommonModule],
-  template: ` <p>gestion-minerval works!</p> `,
-  styles: [],
+  template: ` <p>manage-marks works!</p> `,
+  styles: ``,
 })
-export default class GestionMinervalComponent {}
+export default class ManageMarksComponent {}

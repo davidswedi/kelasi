@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { RouterModule } from '@angular/router';
 import { NgOptimizedImage } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
+import { MatSidenavModule } from '@angular/material/sidenav';
 import { MediaQueryObserverService } from 'src/app/core/services/utilities/media-query-observer.service';
 @Component({
   selector: 'app-landingpage',
@@ -18,6 +19,7 @@ import { MediaQueryObserverService } from 'src/app/core/services/utilities/media
     MatButtonModule,
     NgOptimizedImage,
     MatCardModule,
+    MatSidenavModule,
   ],
   template: `
     <mat-toolbar>
@@ -25,16 +27,25 @@ import { MediaQueryObserverService } from 'src/app/core/services/utilities/media
         {{ appName }}
       </div>
       <div>
-        <button class="btns" mat-raised-button>Se connecter</button>
-        <button class="btns" mat-raised-button color="primary">
-          S'incrire
+        <button class="btns" mat-flat-button>
+          <a mat-button routerLink="/login">Se connecter</a>
         </button>
+        <button class="btns" mat-flat-button color="primary">S'incrire</button>
       </div>
     </mat-toolbar>
-    <div class="container">
+    <div
+      class="container"
+      [ngClass]="
+        (viewPoint$ | async) === 'Small' ||
+        (viewPoint$ | async) === 'XSmall' ||
+        (viewPoint$ | async) === 'Medium'
+          ? 'responsive'
+          : 'container'
+      "
+    >
       <img
-        width="900"
-        height="500"
+        width="850"
+        height="450"
         ngSrc="https://infordc.com/storage/2022/04/IMG-20220406-WA0053-780x405.jpg"
         alt=""
       />
@@ -43,13 +54,13 @@ import { MediaQueryObserverService } from 'src/app/core/services/utilities/media
           <h2>Kelasi</h2>
           <h1>Gérer votre Ecole avec Assurance</h1>
         </div>
-        <div>
+        <div class="h3">
           Gerer d’une manière efficace et efficiante votre ecole en ayant en
           temps réel les informations de votre école. Nous offrons un espace
           convivial pour la gestion de votre école
         </div>
-        <a routerLink="/dashboard"
-          ><button class="btn" mat-raised-button color="primary">
+        <a routerLink="/signup"
+          ><button class="btn" mat-flat-button color="primary">
             Soucrivez-vous maintenant
           </button></a
         >
@@ -75,6 +86,9 @@ import { MediaQueryObserverService } from 'src/app/core/services/utilities/media
     align-items:center;
     // justify-content:center;
   }
+  .responsive{
+    display:block;  
+  }
   .description{
     max-width:30%;
     padding:0.5rem;
@@ -94,7 +108,9 @@ import { MediaQueryObserverService } from 'src/app/core/services/utilities/media
   h1{
     font-size:50px;
   }
-  
+  .h3{
+    font-size:25px;
+  }
   `,
 })
 export default class LandingpageComponent {

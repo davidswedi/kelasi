@@ -1,58 +1,37 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
-import { Router, RouterModule } from '@angular/router';
-import { MatDividerModule } from '@angular/material/divider';
-import { AuthProvidersComponent } from '../auth-providers.component';
-import { MatButtonModule } from '@angular/material/button';
 import { appTitle } from 'src/app/app.config';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/core/services/firebase/auth.service';
 import { FirestoreService } from 'src/app/core/services/firebase/firestore.service';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { User } from '@angular/fire/auth';
+
 @Component({
-  selector: 'app-login',
+  selector: 'app-email-link-rediraction',
   standalone: true,
-  imports: [
-    CommonModule,
-    MatCardModule,
-    RouterModule,
-    MatDividerModule,
-    AuthProvidersComponent,
-    MatButtonModule,
-    MatSnackBarModule,
-  ],
-  template: `
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>{{ appName }}</mat-card-title>
-        <mat-card-subtitle
-          >Connectez-vous et gerez votre ecole en un clic ><br />
-          besoin d'une ecole ?
-          <a mat-button color="primary" routerLink="/signup">Creez un compte</a>
-        </mat-card-subtitle>
-      </mat-card-header>
-      <mat-divider></mat-divider>
-      <mat-card-content>
-        <app-auth-providers></app-auth-providers>
-      </mat-card-content>
-    </mat-card>
-  `,
+  imports: [CommonModule, MatSnackBarModule],
+  template: ` <div class="email-link-container">
+    <h1>{{ appName }}</h1>
+    <p *ngIf="!showMessageState">
+      Le lien d'authentification vous a été envoyé à l'adresse
+      <b>"{{ email }}"</b>, Cliquez sur le lien envoyé pour être authentifié
+    </p>
+    <p *ngIf="showMessageState">
+      Veillez pantienter pendant que nous authentifions
+      <b>"{{ email }}"</b>...
+    </p>
+  </div>`,
   styles: `
-  
-  mat-card{
-    width:max-content;
-    margin:2rem auto;
-  }
-  mat-divider { 
-      margin:1rem 0 ;
-  }
-  
-  
+   .email-link-container {
+        width: clamp(60%, 5vw, 80%);
+        margin: 2rem auto;
+        text-align: center;
+      }
   `,
 })
-export default class LoginComponent {
+export default class EmailLinkRediractionComponent {
   appName = appTitle;
   showMessageState!: boolean;
   private router = inject(Router);
@@ -69,7 +48,7 @@ export default class LoginComponent {
       async (user: User | null) => {
         if (user) {
           if (await this.fs.schoolExists(user.uid)) {
-            this.router.navigate(['/dashboard']);
+            this.router.navigate(['/dashbaord']);
           } else {
             this.router.navigate(['/signup']);
             this.snackBar.open(

@@ -2,26 +2,25 @@ import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { ImageCroppedEvent, ImageCropperModule } from 'ngx-image-cropper';
+import { MatDividerModule } from '@angular/material/divider';
 import { UtilityService } from 'src/app/core/services/utilities/utility.service';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatButtonModule } from '@angular/material/button';
 import { StorageService } from 'src/app/core/services/firebase/storage.service';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
-  selector: 'app-image-croper-dialog',
+  selector: 'app-imag-cropper-dialog',
   standalone: true,
   imports: [
     CommonModule,
-    ImageCropperModule,
-    MatSnackBarModule,
-    MatDividerModule,
     MatDialogModule,
+    ImageCropperModule,
+    MatDividerModule,
+    MatSnackBarModule,
     MatButtonModule,
   ],
   template: `
     <h2 mat-dialog-title>Rognez l'image</h2>
-    <mat-divider></mat-divider>
     <image-cropper
       mat-dialog-content
       [imageChangedEvent]="data.event"
@@ -36,17 +35,16 @@ import { StorageService } from 'src/app/core/services/firebase/storage.service';
       <button mat-flat-button color="primary" mat-dialog-close>Cropper</button>
     </div>
   `,
-  styles: [
-    `
-      image-cropper {
+  styles: `
+  
+  image-cropper {
         height: fit-content;
         max-height: 50vh;
         margin: auto;
       }
-    `,
-  ],
+  `,
 })
-export class ImageCroperDialogComponent {
+export class ImagCropperDialogComponent {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { event: any },
     private uts: UtilityService,

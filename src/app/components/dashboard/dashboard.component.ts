@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { appTitle } from 'src/app/app.config';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,6 +14,11 @@ import { LetDirective } from '@ngrx/component';
 import { MediaQueryObserverService } from 'src/app/core/services/utilities/media-query-observer.service';
 import { SwitchthemeService } from 'src/app/core/services/utilities/switchtheme.service';
 import { Component, inject } from '@angular/core';
+import { AuthService } from 'src/app/core/services/firebase/auth.service';
+import { Subscription } from 'rxjs';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { User } from '@angular/fire/auth';
+import { FirestoreService } from 'src/app/core/services/firebase/firestore.service';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -30,6 +35,7 @@ import { Component, inject } from '@angular/core';
     MatMenuModule,
     MatDividerModule,
     LetDirective,
+    MatSnackBarModule,
   ],
   template: `
     <div class="dashboard-container">
@@ -52,7 +58,10 @@ import { Component, inject } from '@angular/core';
           [matTooltip]="'Menu de ' + appName"
           width="35"
           height="35"
-          ngSrc="https://images.vexels.com/content/145908/preview/male-avatar-maker-2a7919.png"
+          [ngSrc]="
+            (user$ | async)?.photoURL ??
+            'https://images.vexels.com/content/145908/preview/male-avatar-maker-2a7919.png'
+          "
           alt=""
         />
         <mat-menu #menu="matMenu">
@@ -65,7 +74,7 @@ import { Component, inject } from '@angular/core';
             <span>Theme</span>
           </button>
           <mat-divider></mat-divider>
-          <button mat-menu-item>
+          <button mat-menu-item (click)="logOut()">
             <mat-icon>logout</mat-icon>
             <span>Se deconnecter</span>
           </button>
@@ -98,10 +107,10 @@ import { Component, inject } from '@angular/core';
           "
         >
           <a
-            mat-fab
+            mat-flat-button
             extended
             class="link"
-            routerLink="gestion-eleve"
+            routerLink="student"
             routerLinkActive
             #rla="routerLinkActive"
             [color]="rla.isActive ? 'primary' : 'no-color'"
@@ -110,10 +119,10 @@ import { Component, inject } from '@angular/core';
             ><mat-icon>school</mat-icon>Eleves</a
           >
           <a
-            mat-fab
+            mat-flat-button
             extended
             class="link"
-            routerLink="gestion-cours"
+            routerLink="course"
             routerLinkActive
             #rla1="routerLinkActive"
             [color]="rla1.isActive ? 'primary' : 'no-color'"
@@ -122,10 +131,10 @@ import { Component, inject } from '@angular/core';
             ><mat-icon>menu_book</mat-icon>Cours</a
           >
           <a
-            mat-fab
+            mat-flat-button
             extended
             class="link"
-            routerLink="gestion-prof"
+            routerLink="teacher"
             routerLinkActive
             #rla2="routerLinkActive"
             [color]="rla2.isActive ? 'primary' : 'no-color'"
@@ -134,10 +143,10 @@ import { Component, inject } from '@angular/core';
             ><mat-icon>person</mat-icon>Enseignants</a
           >
           <a
-            mat-fab
+            mat-flat-button
             extended
             class="link"
-            routerLink="gestion-classe"
+            routerLink="classes"
             routerLinkActive
             #rla3="routerLinkActive"
             [color]="rla3.isActive ? 'primary' : 'no-color'"
@@ -146,10 +155,10 @@ import { Component, inject } from '@angular/core';
             ><mat-icon>meeting_room</mat-icon>Classes</a
           >
           <a
-            mat-fab
+            mat-flat-button
             extended
             class="link"
-            routerLink="gestion-minerval"
+            routerLink="fees"
             routerLinkActive
             #rla4="routerLinkActive"
             [color]="rla4.isActive ? 'primary' : 'no-color'"
@@ -158,10 +167,10 @@ import { Component, inject } from '@angular/core';
             ><mat-icon>attach_money</mat-icon>Minerval
           </a>
           <a
-            mat-fab
+            mat-flat-button
             extended
             class="link"
-            routerLink="gestion-cotes"
+            routerLink="manage-marks"
             routerLinkActive
             #rla5="routerLinkActive"
             [color]="rla5.isActive ? 'primary' : 'no-color'"
@@ -170,10 +179,10 @@ import { Component, inject } from '@angular/core';
             ><mat-icon>calculate</mat-icon>Cotes</a
           >
           <a
-            mat-fab
+            mat-flat-button
             extended
             class="link"
-            routerLink="setting"
+            routerLink="settings"
             routerLinkActive
             #rla6="routerLinkActive"
             [color]="rla6.isActive ? 'primary' : 'no-color'"
@@ -243,6 +252,38 @@ export default class DashboardComponent {
   appName = appTitle;
   viewPoint$ = inject(MediaQueryObserverService).mediaQuery();
   sts = inject(SwitchthemeService);
+  fs = inject(FirestoreService);
+  private authService = inject(AuthService);
+  user$ = this.authService.currentUser;
+  authState$ = this.authService.authState;
+  authStateSubscription!: Subscription;
+  snackBar = inject(MatSnackBar);
+  router = inject(Router);
+
+  ngOnInit(): void {
+    this.authStateSubscription = this.authState$.subscribe(
+      async (user: User | null) => {
+        if (user) {
+          if (!(await this.fs.schoolExists(user.uid))) {
+            this.router.navigate(['/signup']);
+            this.snackBar.open(
+              "Veuillez terminer l'inscription de votre ecole ",
+              'OK'
+            );
+          }
+        }
+      }
+    );
+  }
+
+  ngOnDestroy() {
+    this.authStateSubscription.unsubscribe();
+  }
+
+  logOut = async () => {
+    await this.authService.logout();
+    this.router.navigate(['/login']);
+  };
 
   toggleDrawer(drawer: MatDrawer, viewPoint: string) {
     if (viewPoint === 'Large' || viewPoint === 'XLarge') {

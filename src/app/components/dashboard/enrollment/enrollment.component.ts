@@ -2,16 +2,10 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-new-eleve',
+  selector: 'app-enrollment',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <p>
-      new-eleve works!
-    </p>
-  `,
-  styles: ``
+  template: ` <p>enrollment works!</p> `,
+  styles: ``,
 })
-export class NewEleveComponent {
-
-}
+export default class EnrollmentComponent {}

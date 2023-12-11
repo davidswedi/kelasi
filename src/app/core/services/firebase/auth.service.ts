@@ -11,6 +11,7 @@ import {
   signOut,
   user,
 } from '@angular/fire/auth';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -19,6 +20,7 @@ export class AuthService {
   private auth = inject(Auth);
   authState = authState(this.auth);
   currentUser = user(this.auth);
+  router = inject(Router);
 
   loginWithGoogle() {
     return signInWithPopup(this.auth, new GoogleAuthProvider());
@@ -39,5 +41,15 @@ export class AuthService {
     }
   }
 
+  isLoggedIn = () => {
+    this.authState.subscribe((user) => {
+      if (user) {
+        return true;
+      } else {
+        this.router.navigate(['/login']);
+        return false;
+      }
+    });
+  };
   logout = () => signOut(this.auth);
 }

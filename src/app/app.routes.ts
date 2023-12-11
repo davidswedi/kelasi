@@ -1,4 +1,7 @@
+import { inject } from '@angular/core';
 import { Routes } from '@angular/router';
+import { AuthService } from './core/services/firebase/auth.service';
+import { User } from '@angular/fire/auth';
 const appName = 'Kelasi';
 export const routes: Routes = [
   {
@@ -18,60 +21,63 @@ export const routes: Routes = [
     loadComponent: () => import('./components/auth/signup/signup.component'),
   },
   {
+    path: 'email-link-rediraction',
+    title: `Redirection Email Link - ${appName}`,
+    loadComponent: () =>
+      import('./components/auth/email-link-rediraction.component'),
+  },
+  {
     path: 'dashboard',
     title: `Dashboard - ${appName}`,
+    canActivate: [() => inject(AuthService).isLoggedIn()],
     loadComponent: () => import('./components/dashboard/dashboard.component'),
     children: [
       {
-        path: 'gestion-eleve',
+        path: 'student',
         title: `Gestion des Eleves - ${appName}`,
         loadComponent: () =>
-          import(
-            './components/dashboard/gestion-eleve/gestion-eleve.component'
-          ),
+          import('./components/dashboard/student/student.component'),
       },
       {
-        path: 'gestion-prof',
+        path: 'teacher',
         title: `Gestion des Enseignants - ${appName}`,
         loadComponent: () =>
-          import('./components/dashboard/gestion-prof/gestion-prof.component'),
+          import('./components/dashboard/teacher/teacher.component'),
       },
       {
-        path: 'gestion-cours',
+        path: 'course',
         title: `Gestion des Cours - ${appName}`,
         loadComponent: () =>
-          import(
-            './components/dashboard/gestion-cours/gestion-cours.component'
-          ),
+          import('./components/dashboard/course/course.component'),
       },
       {
-        path: 'gestion-cotes',
+        path: 'manage-marks',
         title: `Gestion des Cotes - ${appName}`,
         loadComponent: () =>
-          import(
-            './components/dashboard/gestion-cotes/gestion-cotes.component'
-          ),
+          import('./components/dashboard/manage-marks/manage-marks.component'),
       },
       {
-        path: 'gestion-classe',
+        path: 'classes',
         title: `Gestion des Classes - ${appName}`,
         loadComponent: () =>
-          import(
-            './components/dashboard/gestion-classe/gestion-classe.component'
-          ),
+          import('./components/dashboard/classes/classes.component'),
       },
       {
-        path: 'gestion-minerval',
+        path: 'fees',
         title: `Gestion de Minerval - ${appName}`,
         loadComponent: () =>
-          import(
-            './components/dashboard/gestion-minerval/gestion-minerval.component'
-          ),
+          import('./components/dashboard/fees/fees.component'),
+      },
+      {
+        path: 'settings',
+        title: `Paramètres - ${appName}`,
+        loadComponent: () =>
+          import('./components/dashboard/settings/settings.component'),
       },
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: 'gestion-eleve',
+        redirectTo: 'student',
       },
     ],
   },

@@ -9,22 +9,22 @@ export class UtilityService {
   croppedImage!: Promise<string>;
   private router = inject(Router);
 
-  // toPascalCase(str: String) {
-  //   const words = str.split(' ');
-  //   const pascalCaseStr = words.map(
-  //     (w) => w[0].toUpperCase() + w.substring(1).toLowerCase()
-  //   );
-  //   return pascalCaseStr.join('');
-  // }
+  toPascalCase(str: String) {
+    const words = str.split(' ');
+    const pascalCaseStr = words.map(
+      (w) => w[0].toUpperCase() + w.substring(1).toLowerCase()
+    );
+    return pascalCaseStr.join('');
+  }
 
-  // isOnline = async () => {
-  //   try {
-  //     await fetch('https://jsonplaceholder.typicode.com/todos/1');
-  //     return true;
-  //   } catch (error) {
-  //     return false;
-  //   }
-  // };
+  isOnline = async () => {
+    try {
+      await fetch('https://jsonplaceholder.typicode.com/todos/1');
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
 
   // getFormatedDate = (timestamp: Timestamp) => {
   //   return new Intl.DateTimeFormat('fr').format(

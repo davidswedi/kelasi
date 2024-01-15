@@ -33,22 +33,15 @@ import { MediaQueryObserverService } from 'src/app/core/services/utilities/media
         <button class="btns" mat-flat-button color="primary">S'incrire</button>
       </div>
     </mat-toolbar>
-    <div
-      class="container"
-      [ngClass]="
-        (viewPoint$ | async) === 'Small' ||
-        (viewPoint$ | async) === 'XSmall' ||
-        (viewPoint$ | async) === 'Medium'
-          ? 'responsive'
-          : 'container'
-      "
-    >
-      <img
-        width="850"
-        height="450"
+    <div class="container">
+      <!-- <img
         ngSrc="https://infordc.com/storage/2022/04/IMG-20220406-WA0053-780x405.jpg"
         alt=""
-      />
+      /> -->
+      <div class="img-section">
+        <img src="../../assets/image/kelasi.jpg" alt="" />
+      </div>
+
       <div class="description">
         <div class="desc">
           <h2>Kelasi</h2>
@@ -65,9 +58,6 @@ import { MediaQueryObserverService } from 'src/app/core/services/utilities/media
           </button></a
         >
       </div>
-      <div>
-        <img width="200" height="150" src="../assets/image/school.png" alt="" />
-      </div>
     </div>
   `,
   styles: `
@@ -76,29 +66,25 @@ import { MediaQueryObserverService } from 'src/app/core/services/utilities/media
     display:flex;
     justify-content:space-between;
   }
-  .detail{
-    margin-left:4.8rem;
-    max-width:800px;
-  }
   .container{
-    margin:4.8rem;
+    width:100%;
+    margin:2em 5em;
+    // gap:2em;
     display:flex;
-    align-items:center;
-    // justify-content:center;
+    // flex-direction:column;
   }
-  .responsive{
-    display:block;  
+  .container .img-section{
+    width:60%;
   }
-  .description{
-    max-width:30%;
-    padding:0.5rem;
-   margin-left:30px;
+  img{
+    width:90%;
+    border-radius:7px;
+  }
+  .container .description{
+    width:30%;
   }
   .btns{
     margin:0.8rem;
-  }
-  img{
-    border-radius:15px;
   }
   .btn{
     width:300px;
@@ -106,10 +92,43 @@ import { MediaQueryObserverService } from 'src/app/core/services/utilities/media
     margin-top:2.8rem;
   }
   h1{
-    font-size:50px;
+    font-size:25px;
   }
   .h3{
-    font-size:25px;
+    font-size:20px;
+  }
+
+  @media only screen and (max-width:1000px){
+    .container{
+      flex-direction:column;
+    }
+  }
+  @media only screen and (max-width: 800px){
+    .container .img-section{
+    width:90%;
+  }
+  img{
+    width:90%;
+    border-radius:7px;
+  }
+  .container .description{
+    width:90%;
+  }
+  }
+  @media only screen and (max-width:640px){
+    .container{
+    margin:2em 1em;
+  }
+    .container .img-section{
+    width:100%;
+  }
+  img{
+    width:90%;
+    border-radius:7px;
+  }
+  .container .description{
+    width:90%;
+  }
   }
   `,
 })

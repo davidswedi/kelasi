@@ -1,6 +1,6 @@
 import { FieldValue, Timestamp } from '@angular/fire/firestore';
 export interface Student {
-  id: number;
+  id: string;
   name: string;
   lastname: string;
   firstname: string;

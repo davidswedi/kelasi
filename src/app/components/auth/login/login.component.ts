@@ -69,7 +69,7 @@ export default class LoginComponent {
       async (user: User | null) => {
         if (user) {
           if (await this.fs.schoolExists(user.uid)) {
-            this.router.navigate(['/dashboard']);
+            this.router.navigate(['/choose-year']);
           } else {
             this.router.navigate(['/signup']);
             this.snackBar.open(

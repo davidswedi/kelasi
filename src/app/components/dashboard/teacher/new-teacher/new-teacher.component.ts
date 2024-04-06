@@ -1,52 +1,48 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { serverTimestamp } from '@angular/fire/firestore';
+import { FormBuilder, Validators } from '@angular/forms';
 import {
-  MAT_DIALOG_DATA,
   MatDialog,
+  MAT_DIALOG_DATA,
   MatDialogModule,
 } from '@angular/material/dialog';
-import { MatStepperModule } from '@angular/material/stepper';
-import { MatDividerModule } from '@angular/material/divider';
-import { UtilityService } from 'src/app/core/services/utilities/utility.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Subscription } from 'rxjs';
+import { ImagCropperDialogComponent } from 'src/app/components/shared/components/imag-cropper-dialog.component';
+import { Teacher } from 'src/app/core/models/teacher.model';
+import { AuthService } from 'src/app/core/services/firebase/auth.service';
 import { FirestoreService } from 'src/app/core/services/firebase/firestore.service';
 import { StorageService } from 'src/app/core/services/firebase/storage.service';
-import { Subscription } from 'rxjs';
-import { MatButtonModule } from '@angular/material/button';
-import { ImagCropperDialogComponent } from 'src/app/components/shared/components/imag-cropper-dialog.component';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { UtilityService } from 'src/app/core/services/utilities/utility.service';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { Student } from 'src/app/core/models/student.model';
-import { serverTimestamp } from '@angular/fire/firestore';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { AuthService } from 'src/app/core/services/firebase/auth.service';
 import { LetDirective } from '@ngrx/component';
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+
 @Component({
-  selector: 'app-newstudent',
+  selector: 'app-new-teacher',
   standalone: true,
   imports: [
     CommonModule,
-    MatDialogModule,
-    MatStepperModule,
-    MatDividerModule,
     MatButtonModule,
     ReactiveFormsModule,
+    MatStepperModule,
+    MatDividerModule,
     MatFormFieldModule,
-    MatInputModule,
     MatSelectModule,
     LetDirective,
+    MatDialogModule,
+    MatInputModule,
   ],
   template: `
-    <form [formGroup]="addStudentForm">
+    <form [formGroup]="addTeacherForm">
       <h1 mat-dialog-title>
-        {{ student ? 'Modifier les infos de élève' : 'Ajouter un élève' }}
+        {{ teacher ? 'Modifier les infos de élève' : 'Ajouter un élève' }}
       </h1>
       <mat-divider></mat-divider>
       <div class="dilog-content" mat-dialog-content>
@@ -64,17 +60,17 @@ import { LetDirective } from '@ngrx/component';
                 (change)="fileChangeEvent($event)"
               />
               <img
-                *ngIf="!croppedImage && !student"
+                *ngIf="!croppedImage && !teacher"
                 src="../../../assets/image/logo-placeholder.jpg"
                 alt="Logo place holder"
                 class="school-logo-img"
                 (click)="selectImg.click()"
               />
               <img
-                *ngIf="croppedImage || student"
-                [src]="student ? student.PhotoUrl : croppedImage"
+                *ngIf="croppedImage || teacher"
+                [src]="teacher ? teacher.PhotoUrl : croppedImage"
                 alt="Logo place holder"
-                class="student-picture"
+                class="teacher-picture"
                 class="school-logo-img"
                 (click)="selectImg.click()"
               />
@@ -87,7 +83,7 @@ import { LetDirective } from '@ngrx/component';
           </mat-step>
 
           <mat-step
-            [stepControl]="addStudentForm"
+            [stepControl]="addTeacherForm"
             label="Ajouter les Informations de l'élève"
           >
             <div class="fied-in-row margin-top">
@@ -95,7 +91,7 @@ import { LetDirective } from '@ngrx/component';
                 <mat-label>Nom</mat-label>
                 <input matInput placeholder="Ex:David" formControlName="name" />
                 <mat-error
-                  *ngIf="addStudentForm.controls.name.hasError('required')"
+                  *ngIf="addTeacherForm.controls.name.hasError('required')"
                   >Entrez le nom s'il vous plait</mat-error
                 >
               </mat-form-field>
@@ -107,7 +103,7 @@ import { LetDirective } from '@ngrx/component';
                   formControlName="lastname"
                 />
                 <mat-error
-                  *ngIf="addStudentForm.controls.lastname.hasError('required')"
+                  *ngIf="addTeacherForm.controls.lastname.hasError('required')"
                   >Entrez le Post-nom s'il vous plait</mat-error
                 >
               </mat-form-field>
@@ -119,7 +115,7 @@ import { LetDirective } from '@ngrx/component';
                   formControlName="firstname"
                 />
                 <mat-error
-                  *ngIf="addStudentForm.controls.firstname.hasError('required')"
+                  *ngIf="addTeacherForm.controls.firstname.hasError('required')"
                   >Entrez le prenom s'il vous plait</mat-error
                 >
               </mat-form-field>
@@ -130,19 +126,30 @@ import { LetDirective } from '@ngrx/component';
                   <mat-option value="feminin">F</mat-option>
                 </mat-select>
                 <mat-error
-                  *ngIf="addStudentForm.controls.gender.hasError('required')"
+                  *ngIf="addTeacherForm.controls.gender.hasError('required')"
                   >Choisissez le sexe</mat-error
+                >
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Grade</mat-label>
+                <mat-select formControlName="grade">
+                  <mat-option value="licence">Licence</mat-option>
+                  <mat-option value="grade">Grade</mat-option>
+                </mat-select>
+                <mat-error
+                  *ngIf="addTeacherForm.controls.grade.hasError('required')"
+                  >Choisissez un grade</mat-error
                 >
               </mat-form-field>
               <mat-form-field appearance="outline">
                 <mat-label>Adresse</mat-label>
                 <input
                   matInput
-                  placeholder="Ibanda, Nyawera"
-                  formControlName="address"
+                  placeholder="Ex:Nyawera"
+                  formControlName="adress"
                 />
                 <mat-error
-                  *ngIf="addStudentForm.controls.address.hasError('required')"
+                  *ngIf="addTeacherForm.controls.adress.hasError('required')"
                   >Entrez une adresse</mat-error
                 >
               </mat-form-field>
@@ -156,7 +163,7 @@ import { LetDirective } from '@ngrx/component';
           mat-flat-button
           mat-dialog-close
           color="primary"
-          [disabled]="addStudentForm.invalid || disabledBtn"
+          [disabled]="addTeacherForm.invalid || disabledBtn"
           *ngrxLet="currentUser$ | async as user"
           (click)="onSubmit(user?.uid!)"
         >
@@ -167,7 +174,7 @@ import { LetDirective } from '@ngrx/component';
   `,
   styles: `
    @use '../../../shared/styles/form-field.style' as * ;
-    .margin-top{
+   .margin-top{
       margin-top:0.9rem;
     }
    .school-logo-img {
@@ -185,35 +192,33 @@ import { LetDirective } from '@ngrx/component';
           background: lightgrey;
         }
       }
-      .student-picture{
+      .teacher-picture{
         width:100px;
         border-radius:15px;
       }
 
   `,
 })
-export class NewstudentComponent {
+export class NewTeacherComponent {
   private uts = inject(UtilityService);
   private fs = inject(FirestoreService);
   private ss = inject(StorageService);
   private snackbar = inject(MatSnackBar);
   readonly currentUser$ = inject(AuthService).currentUser;
-  yearId!: string;
   croppedImage = '';
   isCroppedImagePending = false;
   private dialog = inject(MatDialog);
   dialogSubs!: Subscription;
   disabledBtn = false;
-  readonly student: Student = inject(MAT_DIALOG_DATA);
+  readonly teacher: Teacher = inject(MAT_DIALOG_DATA);
   isOnline = this.uts.isOnline;
-
+  yearId!: string;
   ngOnInit(): void {
     const yearId = localStorage.getItem('yearId')!;
     this.yearId = yearId;
-    // console.log(this.student);
-    if (this.student) {
-      console.log(this.student);
-      this.addStudentForm.patchValue(this.student);
+
+    if (this.teacher) {
+      this.addTeacherForm.patchValue(this.teacher);
     }
   }
 
@@ -233,30 +238,30 @@ export class NewstudentComponent {
     }
   }
 
-  addStudentForm = new FormBuilder().nonNullable.group({
+  addTeacherForm = new FormBuilder().nonNullable.group({
     name: ['', Validators.required],
     lastname: ['', Validators.required],
     firstname: ['', Validators.required],
     gender: ['', Validators.required],
-    address: ['', Validators.required],
+    grade: ['', Validators.required],
+    adress: ['', Validators.required],
   });
 
   onSubmit(userId: string) {
-    // const yearId = this.yearId
     this.disabledBtn = true;
-    const formValue = this.addStudentForm.getRawValue();
-    const student: Student = {
-      id: this.fs.getDocId(this.fs.studentCollection(this.yearId, userId)),
+    const formValue = this.addTeacherForm.getRawValue();
+    const teacher: Teacher = {
+      id: this.fs.getDocId(this.fs.teacherCollection(this.yearId, userId)),
       PhotoUrl: this.croppedImage,
       createdAt: serverTimestamp(),
       ...formValue,
     };
 
-    this.fs.newStudent(student, this.yearId, userId);
+    this.fs.newTeacher(teacher, this.yearId, userId);
 
-    let notification = this.student
+    let notification = this.teacher
       ? 'Modification réussie!'
-      : 'Elève ajouté avec succès!';
+      : 'Enseignant ajouté avec succès!';
     this.snackbar.open(notification, '', { duration: 5000 });
   }
 }

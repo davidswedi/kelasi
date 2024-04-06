@@ -17,6 +17,8 @@ import { AbstractControl } from '@angular/forms';
 import { debounceTime, take, map } from 'rxjs/operators';
 import { School } from '../../models/school.modei';
 import { Student } from '../../models/student.model';
+import { Teacher } from '../../models/teacher.model';
+import { Section } from '../../models/section.model';
 
 @Injectable({
   providedIn: 'root',
@@ -29,20 +31,49 @@ export class FirestoreService {
 
   //Collections
   schoolCollection = 'schools';
-  studentCollection = (schoolId: string) =>
-    `${this.schoolCollection}/${schoolId}/students`;
+
+  academicYearCollection = (schoolId: string) =>
+    `${this.schoolCollection}/${schoolId}/schoolyears`;
+
+  studentCollection = (YearId: string, schoolId: string) =>
+    `${this.academicYearCollection(schoolId)}/${YearId}/student`;
+
+  teacherCollection = (YearId: string, schoolId: string) =>
+    `${this.academicYearCollection(schoolId)}/${YearId}/teacher`;
+
+  sectionCollection = (YearId: string, schoolId: string) =>
+    `${this.academicYearCollection(schoolId)}/${YearId}/section`;
 
   //reference de la collection school et sous collection
 
   schoolColRef = collection(this.fs, this.schoolCollection);
-  studentColRef = (shoolId: string) =>
-    collection(this.fs, this.studentCollection(shoolId));
+
+  academicYearRef = (SchoolId: string) =>
+    collection(this.fs, this.academicYearCollection(SchoolId));
+
+  // studentRef = (YearId: string) => collection(this.fs, this.studentCol(YearId));
+
+  studentColRef = (YearId: string, schoolId: string) =>
+    collection(this.fs, this.studentCollection(YearId, schoolId));
+
+  //Reference de la collection de l'enseignant
+  teacherColRef = (YearId: string, schoolId: string) =>
+    collection(this.fs, this.teacherCollection(YearId, schoolId));
+
+  sectionColRef = (YearId: string, schoolId: string) =>
+    collection(this.fs, this.sectionCollection(YearId, schoolId));
 
   //creation ou modification d'un document dans firestore
   newSchool = (s: School) => setDoc(doc(this.schoolColRef, s.id), s);
-  newStudent = (s: Student, schoolId: string) =>
-    setDoc(doc(this.studentColRef(schoolId), s.id), s);
 
+  newStudent = (s: Student, YearId: string, choolId: string) =>
+    setDoc(doc(this.studentColRef(YearId, choolId), s.id), s);
+
+  newTeacher = (s: Teacher, YearId: string, schoolId: string) =>
+    setDoc(doc(this.teacherColRef(YearId, schoolId), s.id), s);
+
+  newSection = (s: Section, YearId: string, schoolId: string) =>
+    setDoc(doc(this.sectionColRef(YearId, schoolId), s.id), s);
   // Recuperer les donnees d'une colletion
 
   getCollectionData(ColName: string) {
@@ -50,6 +81,14 @@ export class FirestoreService {
     const queryDocByDate = query(collectionRef, orderBy('createdAt', 'desc'));
     return collectionData(queryDocByDate);
   }
+
+  //effacer un document d'une collection
+
+  deleteDocData(collectionName: string, docId: string) {
+    const docRef = doc(this.fs, collectionName, docId);
+    deleteDoc(docRef);
+  }
+
   alreadyExistInputValidator(collectionName: string, fieldName: string) {
     return (control: AbstractControl) => {
       const value = control.value;

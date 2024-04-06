@@ -106,6 +106,7 @@ import { FirestoreService } from 'src/app/core/services/firebase/firestore.servi
             (viewPoint$ | async) === 'XLarge'
           "
         >
+          <p>{{ yearId }}</p>
           <a
             mat-flat-button
             extended
@@ -122,10 +123,22 @@ import { FirestoreService } from 'src/app/core/services/firebase/firestore.servi
             mat-flat-button
             extended
             class="link"
-            routerLink="course"
+            routerLink="enrollment"
             routerLinkActive
             #rla1="routerLinkActive"
             [color]="rla1.isActive ? 'primary' : 'no-color'"
+            *ngrxLet="viewPoint$ as vw"
+            (click)="toggleDrawer(drawer, vw)"
+            ><mat-icon>app_registration</mat-icon>Inscription</a
+          >
+          <a
+            mat-flat-button
+            extended
+            class="link"
+            routerLink="course"
+            routerLinkActive
+            #rla2="routerLinkActive"
+            [color]="rla2.isActive ? 'primary' : 'no-color'"
             *ngrxLet="viewPoint$ as vw"
             (click)="toggleDrawer(drawer, vw)"
             ><mat-icon>menu_book</mat-icon>Cours</a
@@ -136,8 +149,8 @@ import { FirestoreService } from 'src/app/core/services/firebase/firestore.servi
             class="link"
             routerLink="teacher"
             routerLinkActive
-            #rla2="routerLinkActive"
-            [color]="rla2.isActive ? 'primary' : 'no-color'"
+            #rla3="routerLinkActive"
+            [color]="rla3.isActive ? 'primary' : 'no-color'"
             *ngrxLet="viewPoint$ as vw"
             (click)="toggleDrawer(drawer, vw)"
             ><mat-icon>person</mat-icon>Enseignants</a
@@ -146,10 +159,22 @@ import { FirestoreService } from 'src/app/core/services/firebase/firestore.servi
             mat-flat-button
             extended
             class="link"
+            routerLink="section"
+            routerLinkActive
+            #rla8="routerLinkActive"
+            [color]="rla8.isActive ? 'primary' : 'no-color'"
+            *ngrxLet="viewPoint$ as vw"
+            (click)="toggleDrawer(drawer, vw)"
+            ><mat-icon>auto_stories</mat-icon>Sections</a
+          >
+          <a
+            mat-flat-button
+            extended
+            class="link"
             routerLink="classes"
             routerLinkActive
-            #rla3="routerLinkActive"
-            [color]="rla3.isActive ? 'primary' : 'no-color'"
+            #rla4="routerLinkActive"
+            [color]="rla4.isActive ? 'primary' : 'no-color'"
             *ngrxLet="viewPoint$ as vw"
             (click)="toggleDrawer(drawer, vw)"
             ><mat-icon>meeting_room</mat-icon>Classes</a
@@ -160,8 +185,8 @@ import { FirestoreService } from 'src/app/core/services/firebase/firestore.servi
             class="link"
             routerLink="fees"
             routerLinkActive
-            #rla4="routerLinkActive"
-            [color]="rla4.isActive ? 'primary' : 'no-color'"
+            #rla5="routerLinkActive"
+            [color]="rla5.isActive ? 'primary' : 'no-color'"
             *ngrxLet="viewPoint$ as vw"
             (click)="toggleDrawer(drawer, vw)"
             ><mat-icon>attach_money</mat-icon>Minerval
@@ -172,8 +197,8 @@ import { FirestoreService } from 'src/app/core/services/firebase/firestore.servi
             class="link"
             routerLink="manage-marks"
             routerLinkActive
-            #rla5="routerLinkActive"
-            [color]="rla5.isActive ? 'primary' : 'no-color'"
+            #rla6="routerLinkActive"
+            [color]="rla6.isActive ? 'primary' : 'no-color'"
             *ngrxLet="viewPoint$ as vw"
             (click)="toggleDrawer(drawer, vw)"
             ><mat-icon>calculate</mat-icon>Cotes</a
@@ -184,8 +209,8 @@ import { FirestoreService } from 'src/app/core/services/firebase/firestore.servi
             class="link"
             routerLink="settings"
             routerLinkActive
-            #rla6="routerLinkActive"
-            [color]="rla6.isActive ? 'primary' : 'no-color'"
+            #rla7="routerLinkActive"
+            [color]="rla7.isActive ? 'primary' : 'no-color'"
             *ngrxLet="viewPoint$ as vw"
             (click)="toggleDrawer(drawer, vw)"
             ><mat-icon>settings</mat-icon>Parametres</a
@@ -259,8 +284,10 @@ export default class DashboardComponent {
   authStateSubscription!: Subscription;
   snackBar = inject(MatSnackBar);
   router = inject(Router);
-
+  yearId!: string | null;
   ngOnInit(): void {
+    const yearId = localStorage.getItem('yearId');
+    this.yearId = yearId;
     this.authStateSubscription = this.authState$.subscribe(
       async (user: User | null) => {
         if (user) {

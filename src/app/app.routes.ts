@@ -27,6 +27,12 @@ export const routes: Routes = [
       import('./components/auth/email-link-rediraction.component'),
   },
   {
+    path: 'choose-year',
+    title: 'Année scolaire',
+    loadComponent: () =>
+      import('./components/choose-year/choose-year.component'),
+  },
+  {
     path: 'dashboard',
     title: `Dashboard - ${appName}`,
     canActivate: [() => inject(AuthService).isLoggedIn()],
@@ -37,6 +43,12 @@ export const routes: Routes = [
         title: `Gestion des Eleves - ${appName}`,
         loadComponent: () =>
           import('./components/dashboard/student/student.component'),
+      },
+      {
+        path: 'enrollment',
+        title: `Gestion d'inscription' - ${appName}`,
+        loadComponent: () =>
+          import('./components/dashboard/enrollment/enrollment.component'),
       },
       {
         path: 'teacher',
@@ -61,6 +73,12 @@ export const routes: Routes = [
         title: `Gestion des Classes - ${appName}`,
         loadComponent: () =>
           import('./components/dashboard/classes/classes.component'),
+      },
+      {
+        path: 'section',
+        title: `Gestion des Sections - ${appName}`,
+        loadComponent: () =>
+          import('./components/dashboard/section/section.component'),
       },
       {
         path: 'fees',

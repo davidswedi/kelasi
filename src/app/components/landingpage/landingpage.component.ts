@@ -61,7 +61,10 @@ import { MediaQueryObserverService } from 'src/app/core/services/utilities/media
     </div>
   `,
   styles: `
-  
+  body{
+    // background:#fff;
+    background:linear-gradient(45deg,blue,white);
+  }
   mat-toolbar{
     display:flex;
     justify-content:space-between;
@@ -103,7 +106,7 @@ import { MediaQueryObserverService } from 'src/app/core/services/utilities/media
       flex-direction:column;
     }
   }
-  @media only screen and (max-width: 800px){
+  @media only screen and (max-width:1000px){
     .container .img-section{
     width:90%;
   }

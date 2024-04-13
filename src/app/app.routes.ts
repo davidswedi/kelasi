@@ -93,9 +93,18 @@ export const routes: Routes = [
           import('./components/dashboard/settings/settings.component'),
       },
       {
+        path: 'dash-dashboard',
+        title: `Dashboard - ${appName}`,
+        loadComponent: () =>
+          import(
+            './components/dashboard/dash-dashboard/dash-dashboard.component'
+          ),
+      },
+
+      {
         path: '',
         pathMatch: 'full',
-        redirectTo: 'student',
+        redirectTo: 'dash-dashboard',
       },
     ],
   },

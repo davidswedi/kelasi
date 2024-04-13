@@ -19,6 +19,8 @@ import { School } from '../../models/school.modei';
 import { Student } from '../../models/student.model';
 import { Teacher } from '../../models/teacher.model';
 import { Section } from '../../models/section.model';
+import { Class } from '../../models/class.model';
+import { Enrollement } from '../../models/enrollement.model';
 
 @Injectable({
   providedIn: 'root',
@@ -44,6 +46,12 @@ export class FirestoreService {
   sectionCollection = (YearId: string, schoolId: string) =>
     `${this.academicYearCollection(schoolId)}/${YearId}/section`;
 
+  classCollection = (YearId: string, schoolId: string) =>
+    `${this.academicYearCollection(schoolId)}/${YearId}/class`;
+
+  enrollementCollection = (YearId: string, schoolId: string) =>
+    `${this.academicYearCollection(schoolId)}/${YearId}/enrollement`;
+
   //reference de la collection school et sous collection
 
   schoolColRef = collection(this.fs, this.schoolCollection);
@@ -63,6 +71,11 @@ export class FirestoreService {
   sectionColRef = (YearId: string, schoolId: string) =>
     collection(this.fs, this.sectionCollection(YearId, schoolId));
 
+  classColRef = (YearId: string, schoolId: string) =>
+    collection(this.fs, this.classCollection(YearId, schoolId));
+
+  enrollementCoRef = (YearId: string, schoolId: string) =>
+    collection(this.fs, this.enrollementCollection(YearId, schoolId));
   //creation ou modification d'un document dans firestore
   newSchool = (s: School) => setDoc(doc(this.schoolColRef, s.id), s);
 
@@ -74,6 +87,15 @@ export class FirestoreService {
 
   newSection = (s: Section, YearId: string, schoolId: string) =>
     setDoc(doc(this.sectionColRef(YearId, schoolId), s.id), s);
+
+  newClass = (c: Class, YearId: string, schoolId: string) => {
+    setDoc(doc(this.classColRef(YearId, schoolId), c.id), c);
+  };
+
+  newEnrollement = (e: Enrollement, YearId: string, schoolId: string) => {
+    setDoc(doc(this.enrollementCoRef(YearId, schoolId), e.id), e);
+  };
+
   // Recuperer les donnees d'une colletion
 
   getCollectionData(ColName: string) {
@@ -81,7 +103,11 @@ export class FirestoreService {
     const queryDocByDate = query(collectionRef, orderBy('createdAt', 'desc'));
     return collectionData(queryDocByDate);
   }
-
+  getCollectionDataById(ColName: string, Id: string) {
+    const collectionRef = collection(this.fs, ColName);
+    const queryDocById = query(collectionRef, where('id', '==', Id));
+    return collectionData(queryDocById);
+  }
   //effacer un document d'une collection
 
   deleteDocData(collectionName: string, docId: string) {

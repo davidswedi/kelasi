@@ -27,8 +27,25 @@ import { MediaQueryObserverService } from 'src/app/core/services/utilities/media
         {{ appName }}
       </div>
       <div>
-        <button class="btns" mat-flat-button>
+        <button
+          class="btns"
+          mat-flat-button
+          *ngIf="
+            (viewPoint$ | async) === 'XLarge' ||
+            (viewPoint$ | async) === 'Large' ||
+            (viewPoint$ | async) === 'Medium'
+          "
+        >
           <a mat-button routerLink="/login">Se connecter</a>
+        </button>
+        <button
+          mat-flat-button
+          *ngIf="
+            (viewPoint$ | async) === 'XSmall' ||
+            (viewPoint$ | async) === 'Small'
+          "
+        >
+          <a mat-button routerLink="/login"><mat-icon>login</mat-icon></a>
         </button>
         <button class="btns" mat-flat-button color="primary">S'incrire</button>
       </div>

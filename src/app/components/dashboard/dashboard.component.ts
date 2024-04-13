@@ -1,3 +1,4 @@
+import { School } from './../../core/models/school.modei';
 import { CommonModule } from '@angular/common';
 import { Router, RouterOutlet } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -19,6 +20,7 @@ import { Subscription } from 'rxjs';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { User } from '@angular/fire/auth';
 import { FirestoreService } from 'src/app/core/services/firebase/firestore.service';
+import { docData } from '@angular/fire/firestore';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -106,7 +108,20 @@ import { FirestoreService } from 'src/app/core/services/firebase/firestore.servi
             (viewPoint$ | async) === 'XLarge'
           "
         >
-          <p>{{ yearId }}</p>
+          <!-- <img width="40" height="40" alt="School Image" /> -->
+          <h3 class="app-name">{{ schoolName }}</h3>
+          <a
+            mat-flat-button
+            extended
+            class="link"
+            routerLink="dash-dashboard"
+            routerLinkActive
+            #rla10="routerLinkActive"
+            [color]="rla10.isActive ? 'primary' : 'no-color'"
+            *ngrxLet="viewPoint$ as vw"
+            (click)="toggleDrawer(drawer, vw)"
+            ><mat-icon>dashboard</mat-icon>Dashboard</a
+          >
           <a
             mat-flat-button
             extended
@@ -222,6 +237,9 @@ import { FirestoreService } from 'src/app/core/services/firebase/firestore.servi
   `,
   styles: [
     `
+      .app-name {
+        margin: 0.9rem;
+      }
       .dashboard-container {
         height: 100vh;
         display: flex;
@@ -274,6 +292,9 @@ import { FirestoreService } from 'src/app/core/services/firebase/firestore.servi
   ],
 })
 export default class DashboardComponent {
+  schoolName!: string;
+  schoolUrl!: string;
+  schoolCollection!: string;
   appName = appTitle;
   viewPoint$ = inject(MediaQueryObserverService).mediaQuery();
   sts = inject(SwitchthemeService);
@@ -285,6 +306,7 @@ export default class DashboardComponent {
   snackBar = inject(MatSnackBar);
   router = inject(Router);
   yearId!: string | null;
+  subscription!: Subscription;
   ngOnInit(): void {
     const yearId = localStorage.getItem('yearId');
     this.yearId = yearId;
@@ -301,6 +323,17 @@ export default class DashboardComponent {
         }
       }
     );
+    this.schoolCollection = this.fs.schoolCollection;
+    this.user$.subscribe((user) => {
+      const userId = user?.uid!;
+      this.fs
+        .getCollectionDataById(this.schoolCollection, userId)
+        .subscribe((docData) => {
+          const school = docData as School[];
+          this.schoolName = school[0].name;
+          this.schoolUrl = school[0].logoUrlImg;
+        });
+    });
   }
 
   ngOnDestroy() {
